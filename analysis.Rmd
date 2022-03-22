@@ -1,0 +1,66 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r Libraries}
+library(tidyverse)
+library(readxl)
+library(lme4)
+```
+
+
+```{r Import}
+ed <- read_excel("../Data/elected_year_city.xlsx")
+```
+
+```{r Explore}
+ed %>%
+  ggplot() + 
+  geom_histogram(aes(x = women_pct)) + 
+  facet_wrap(~ rcv)
+
+ed %>%
+  ggplot() + 
+  geom_point(aes(x = year, y = women_pct)) 
+```
+
+
+```{r Logistic Regression}
+
+# construct success/failure matrices
+gender_mat <- cbind(ed$women, ed$men)
+color_mat <- cbind(ed$color, ed$white)
+
+# either woman or poc -- doesn't work! not a partition
+minority_mat <- cbind(ed$minority, ed$total - ed$minority)
+
+# gender model
+an1 <- glm(gender_mat ~ rcv + year , data=ed, family="binomial")
+summary(an1) # p = .3642
+
+# color model
+an2 <- glm(color_mat ~ rcv + year, data=ed, family="binomial")
+summary(an2) 
+
+
+```
+
+```{r Random Effects Model}
+
+an3 <- glmer(gender_mat ~ scale(year) + rcv + (1|city), data=ed, 
+             family="binomial")
+
+summary(an3)
+
+an4 <- glmer(color_mat ~ scale(year) + rcv + (1|city), data=ed, 
+             family="binomial")
+
+summary(an4)
+
+```
+
+
+

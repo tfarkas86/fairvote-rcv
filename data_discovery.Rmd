@@ -1,0 +1,44 @@
+---
+title: "Fair Vote Minority"
+author: "Tim Farkas"
+date: "9/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(readxl)
+
+```
+
+
+```{r Input Data}
+
+ed <- read_excel(path = "../Data/minority_summary.xlsx") %>%
+  mutate(rcv = ifelse(year_rcv < 0, "RCV", "No RCV"))
+```
+
+```{r Plot}
+
+ed %>%
+  filter(total > 1) %>%
+  ggplot() +
+  geom_point(aes(x=year_rcv, y=p_women, color=rcv))
+
+ed %>%
+  filter(total > 1) %>%
+  ggplot() +
+  geom_point(aes(x=year, y=p_women))
+
+ed %>%
+  filter(total > 1) %>%
+  ggplot() +
+  geom_point(aes(x=year, y=p_color))
+
+```
+
+
